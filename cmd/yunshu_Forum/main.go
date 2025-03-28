@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	_ "time"
+	"time"
 	"yunshu_Forum/config"
 	"yunshu_Forum/internal/utils"
 )
@@ -12,7 +12,17 @@ func main() {
 	utils.DBinit()
 	utils.OssInit()
 	utils.RedisInit()
-	testDb()
+	//启动邮件发送服务
+	emailWorker := utils.NewEmailWorker(10)
+	emailWorker.Start()
+	go emailWorker.ListenError()
+	time.Sleep(1 * time.Second)
+	//发送邮件
+	email := utils.Emailreq{Aim: "fengpw56666", Subject: "test", Body: "hello world"}
+	emailWorker.SendEmail(email)
+
+	emailWorker.Wait()
+	//testDb()
 	//printall()
 
 }

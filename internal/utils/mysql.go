@@ -17,7 +17,6 @@ type DB struct {
 }
 
 var db *DB
-
 func DBinit() {
 	var err error
 	db = &DB{}

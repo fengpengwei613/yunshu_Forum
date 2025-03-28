@@ -70,14 +70,20 @@ var (
 	Email    = &EmailConfig{}
 )
 
-// 初始化配置
-func InitConfig() {
+func GetRootPath() string {
 	//获取项目目录
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
 		panic("获取项目目录失败")
 	}
 	root := path.Dir(path.Dir(filename))
+	return root
+}
+
+// 初始化配置
+func InitConfig() {
+	//获取项目目录
+	root := GetRootPath()
 	//拼接配置文件路径
 	configPath := path.Join(root, "/config")
 
