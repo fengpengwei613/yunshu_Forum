@@ -41,6 +41,7 @@ func SendEmail(email Emailreq) HandelEerror {
 type EmailWorker struct {
 	EmailChan chan Emailreq
 	Errchan   chan HandelEerror
+	
 	WaitGroup sync.WaitGroup
 	PoolSize  int
 }
@@ -61,6 +62,9 @@ func (e *EmailWorker) Start() {
 			for {
 				select {
 				case email := <-e.EmailChan:
+					if email.Aim == "" {
+						return
+					}
 					errhandler := SendEmail(email)
 					fmt.Println("发送邮件")
 					if errhandler.Err != nil {
@@ -68,6 +72,7 @@ func (e *EmailWorker) Start() {
 						e.Errchan <- errhandler
 					}
 					e.WaitGroup.Done()
+				
 				}
 			}
 		}()

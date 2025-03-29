@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"time"
+	_"time"
 	"yunshu_Forum/config"
 	"yunshu_Forum/internal/utils"
 )
@@ -14,29 +14,32 @@ func main() {
 	utils.RedisInit()
 	//启动邮件发送服务
 	emailWorker := utils.NewEmailWorker(10)
+	//开始监听通道
 	emailWorker.Start()
+	//监听邮件发送错误信息
 	go emailWorker.ListenError()
-	time.Sleep(1 * time.Second)
-	//发送邮件
-	email := utils.Emailreq{Aim: "fengpw56666", Subject: "test", Body: "hello world"}
-	emailWorker.SendEmail(email)
-
-	emailWorker.Wait()
-	//testDb()
+	testDb()
 	//printall()
+
+
+
+	//等待所有邮件任务完成
+	emailWorker.Wait()
+	
 
 }
 
 func testDb() {
 	//mysql主数据库测试
-	db := utils.GetMasterDB()
-	var count int
+	db := utils.GetDB()
+	var count int64
 	db.Table("users").Count(&count)
 	fmt.Println("users表总行数：", count)
 	//mysql从数据库测试
-	db_slave := utils.GetSlaveDB()
-	db_slave.Table("users").Count(&count)
-	fmt.Println("users表总行数：", count)
+	db = utils.GetDB()
+	var count2 int64
+	db.Table("users").Count(&count2)
+	fmt.Println("users表总行数：", count2)
 	//OSS测试
 	name, err_oss := utils.UploadFileToOss("test.txt", "hello world")
 	fmt.Println(name)
